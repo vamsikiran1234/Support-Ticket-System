@@ -1,4 +1,4 @@
-﻿-- Support Ticket Management System
+-- Support Ticket Management System
 -- Initial Seed Data Script
 -- Default password for all seed accounts is: Password123!
 

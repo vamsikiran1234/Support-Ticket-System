@@ -1,4 +1,4 @@
-﻿-- Support Ticket Management System
+-- Support Ticket Management System
 -- Database Schema Definition
 
 CREATE DATABASE IF NOT EXISTS support_tickets;

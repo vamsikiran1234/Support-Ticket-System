@@ -1,4 +1,4 @@
-﻿const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 /**
  * Authentication Middleware: Verifies JWT token on protected endpoints.

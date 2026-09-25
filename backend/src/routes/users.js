@@ -1,4 +1,4 @@
-﻿const router = require('express').Router();
+const router = require('express').Router();
 const pool = require('../config/db');
 const { authenticate, requireRole } = require('../middleware/auth');
 
