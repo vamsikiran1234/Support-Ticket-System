@@ -26,7 +26,7 @@ router.get('/stats', requireRole('agent'), async (req, res) => {
     });
   } catch (err) {
     console.error('Error fetching ticket statistics:', err);
-    res.status(500).json({ error: 'Failed to retrieve ticket statistics' });
+    res.status(500).json({ error: 'Failed to retrieve ticket statistics: ' + (err.sqlMessage || err.message) });
   }
 });
 
@@ -53,12 +53,14 @@ router.post('/', async (req, res) => {
     });
   } catch (err) {
     console.error('Error creating ticket:', err);
-    res.status(500).json({ error: 'Failed to create ticket' });
+    if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_NO_REFERENCED_ROW') {
+      return res.status(401).json({ error: 'User session invalid or user not found. Please log out and sign in again.' });
+    }
+    res.status(500).json({ error: 'Failed to create ticket: ' + (err.sqlMessage || err.message) });
   }
 });
 
 // GET /api/tickets - Retrieve tickets (role-filtered, searchable, and filterable)
-// Demonstrates JOIN between tickets, customer users, and assigned agent users
 router.get('/', async (req, res) => {
   try {
     const isAgent = req.user.role === 'agent';
@@ -119,7 +121,7 @@ router.get('/', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Error fetching tickets:', err);
-    res.status(500).json({ error: 'Failed to fetch tickets' });
+    res.status(500).json({ error: 'Failed to fetch tickets: ' + (err.sqlMessage || err.message) });
   }
 });
 
@@ -154,8 +156,7 @@ router.get('/:id', async (req, res) => {
 
     const ticket = rows[0];
 
-    // Explicit Ownership Check:
-    // Non-agents are strictly forbidden from viewing another customer's ticket
+    // Ownership check: non-agents cannot access other customers' tickets
     if (req.user.role !== 'agent' && ticket.user_id !== req.user.id) {
       return res.status(403).json({ error: 'Forbidden' });
     }
@@ -163,11 +164,11 @@ router.get('/:id', async (req, res) => {
     res.json(ticket);
   } catch (err) {
     console.error('Error fetching ticket details:', err);
-    res.status(500).json({ error: 'Failed to fetch ticket details' });
+    res.status(500).json({ error: 'Failed to fetch ticket details: ' + (err.sqlMessage || err.message) });
   }
 });
 
-// PUT /api/tickets/:id - Update status, priority, or assigned agent (Agent / Authorized)
+// PUT /api/tickets/:id - Update status, priority, or assigned agent (Agent-only)
 router.put('/:id', requireRole('agent'), async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -214,7 +215,7 @@ router.put('/:id', requireRole('agent'), async (req, res) => {
     res.json({ message: 'Ticket updated' });
   } catch (err) {
     console.error('Error updating ticket:', err);
-    res.status(500).json({ error: 'Failed to update ticket' });
+    res.status(500).json({ error: 'Failed to update ticket: ' + (err.sqlMessage || err.message) });
   }
 });
 
@@ -239,7 +240,7 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Ticket deleted successfully' });
   } catch (err) {
     console.error('Error deleting ticket:', err);
-    res.status(500).json({ error: 'Failed to delete ticket' });
+    res.status(500).json({ error: 'Failed to delete ticket: ' + (err.sqlMessage || err.message) });
   }
 });
 
@@ -248,7 +249,6 @@ router.get('/:id/comments', async (req, res) => {
   try {
     const ticketId = req.params.id;
 
-    // Check ticket existence and verify ownership
     const [ticketRows] = await pool.execute('SELECT id, user_id FROM tickets WHERE id = ?', [ticketId]);
     if (!ticketRows || ticketRows.length === 0) {
       return res.status(404).json({ error: 'Ticket not found' });
@@ -277,11 +277,11 @@ router.get('/:id/comments', async (req, res) => {
     res.json(comments);
   } catch (err) {
     console.error('Error fetching comments:', err);
-    res.status(500).json({ error: 'Failed to fetch comments' });
+    res.status(500).json({ error: 'Failed to fetch comments: ' + (err.sqlMessage || err.message) });
   }
 });
 
-// POST /api/tickets/:id/comments - Add a response/comment to an authorized ticket
+// POST /api/tickets/:id/comments - Add a response/comment
 router.post('/:id/comments', async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -312,7 +312,7 @@ router.post('/:id/comments', async (req, res) => {
     });
   } catch (err) {
     console.error('Error posting comment:', err);
-    res.status(500).json({ error: 'Failed to post comment' });
+    res.status(500).json({ error: 'Failed to post comment: ' + (err.sqlMessage || err.message) });
   }
 });
 
