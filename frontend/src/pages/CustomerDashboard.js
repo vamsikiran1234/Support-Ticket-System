@@ -189,8 +189,10 @@ const CustomerDashboard = () => {
                     </span>
                   </td>
                   <td className="date-cell">
-                    <Calendar size={14} />
-                    <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    <div className="date-wrapper">
+                      <Calendar size={14} />
+                      <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    </div>
                   </td>
                   <td>
                     <Link to={`/tickets/${ticket.id}`} className="btn btn-sm btn-outline">

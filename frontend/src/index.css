@@ -518,11 +518,21 @@ input[type="text"].search-input:focus,
 }
 
 .date-cell {
-  display: flex;
+  white-space: nowrap;
+}
+
+.date-wrapper {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.date-wrapper svg {
+  color: #94a3b8;
+  flex-shrink: 0;
 }
 
 .agent-text {

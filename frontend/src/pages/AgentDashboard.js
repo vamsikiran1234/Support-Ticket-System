@@ -273,8 +273,10 @@ const AgentDashboard = () => {
                     </select>
                   </td>
                   <td className="date-cell">
-                    <Calendar size={13} />
-                    <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    <div className="date-wrapper">
+                      <Calendar size={13} />
+                      <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    </div>
                   </td>
                   <td>
                     <Link to={`/tickets/${ticket.id}`} className="btn btn-sm btn-outline">
