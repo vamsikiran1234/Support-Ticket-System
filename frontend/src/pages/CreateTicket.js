@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
-import { ArrowLeft, Send, AlertCircle, LifeBuoy } from 'lucide-react';
+import { ArrowLeft, Send, AlertCircle } from 'lucide-react';
+import { TicketFlowIcon } from '../components/Logo';
 
 const CreateTicket = () => {
   const [subject, setSubject] = useState('');
@@ -46,7 +47,7 @@ const CreateTicket = () => {
       <div className="card form-card">
         <div className="card-header">
           <div className="header-icon">
-            <LifeBuoy size={24} />
+            <TicketFlowIcon size={24} />
           </div>
           <div>
             <h2>Create New Support Ticket</h2>

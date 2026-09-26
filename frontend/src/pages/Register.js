@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LifeBuoy, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { TicketFlowIcon } from '../components/Logo';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -54,7 +55,7 @@ const Register = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo">
-            <LifeBuoy size={32} />
+            <TicketFlowIcon size={30} />
           </div>
           <h2>Create Customer Account</h2>
           <p>Register to submit and track your support tickets</p>

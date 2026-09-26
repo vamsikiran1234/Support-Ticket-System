@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LifeBuoy, LogOut, PlusCircle, LayoutDashboard, Shield, User } from 'lucide-react';
+import { LogOut, PlusCircle, LayoutDashboard, Shield, User } from 'lucide-react';
+import { TicketFlowIcon } from './Logo';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -21,7 +22,7 @@ const Navbar = () => {
       <div className="nav-container">
         <Link to={isAgent ? '/agent/dashboard' : '/dashboard'} className="nav-brand">
           <div className="brand-icon">
-            <LifeBuoy size={24} />
+            <TicketFlowIcon size={22} />
           </div>
           <span className="brand-text">TicketFlow</span>
         </Link>

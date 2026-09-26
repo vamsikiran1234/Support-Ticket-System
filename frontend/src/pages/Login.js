@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LifeBuoy, AlertCircle, ArrowRight, UserCheck, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ArrowRight, UserCheck, ShieldCheck } from 'lucide-react';
+import { TicketFlowIcon } from '../components/Logo';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -45,7 +46,7 @@ const Login = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo">
-            <LifeBuoy size={32} />
+            <TicketFlowIcon size={30} />
           </div>
           <h2>Welcome Back</h2>
           <p>Sign in to access your support portal</p>
