@@ -9,11 +9,11 @@ router.get('/stats', requireRole('agent'), async (req, res) => {
   try {
     const [counts] = await pool.execute(`
       SELECT 
-        COUNT(*) AS total,
-        SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) AS open,
-        SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) AS in_progress,
-        SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) AS closed,
-        SUM(CASE WHEN priority = 'high' AND status != 'closed' THEN 1 ELSE 0 END) AS high_priority
+        COUNT(*) AS \`total\`,
+        COALESCE(SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END), 0) AS \`open\`,
+        COALESCE(SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END), 0) AS \`in_progress\`,
+        COALESCE(SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END), 0) AS \`closed\`,
+        COALESCE(SUM(CASE WHEN priority = 'high' AND status != 'closed' THEN 1 ELSE 0 END), 0) AS \`high_priority\`
       FROM tickets
     `);
 
