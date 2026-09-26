@@ -2,6 +2,8 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const mysql = require('mysql2/promise');
 
+const isCloud = process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1';
+
 // createPool lets multiple concurrent requests use the database efficiently
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -12,7 +14,8 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  decimalNumbers: true
+  decimalNumbers: true,
+  ssl: isCloud ? { rejectUnauthorized: false } : undefined
 });
 
 module.exports = pool;
