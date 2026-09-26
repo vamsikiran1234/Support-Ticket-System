@@ -4,7 +4,8 @@ import api from '../api/client';
 import { StatusBadge, PriorityBadge } from '../components/StatusBadge';
 import { 
   Shield, Search, Filter, RefreshCw, ArrowRight, UserCheck, 
-  AlertTriangle, CheckCircle2, Clock, Inbox, Calendar, User
+  AlertTriangle, CheckCircle2, Clock, Inbox, Calendar, User,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 const AgentDashboard = () => {
@@ -17,6 +18,8 @@ const AgentDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 10, totalPages: 1 });
 
   const fetchData = async () => {
     try {
@@ -30,14 +33,22 @@ const AgentDashboard = () => {
             status: statusFilter || undefined,
             priority: priorityFilter || undefined,
             search: search.trim() || undefined,
-            sort: sortBy
+            sort: sortBy,
+            page,
+            limit: 10,
+            paginated: 'true'
           }
         }),
         api.get('/users?role=agent')
       ]);
 
       setStats(statsRes.data);
-      setTickets(ticketsRes.data);
+      if (ticketsRes.data.tickets) {
+        setTickets(ticketsRes.data.tickets);
+        setPagination(ticketsRes.data.pagination);
+      } else {
+        setTickets(ticketsRes.data);
+      }
       setAgents(agentsRes.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to load support dashboard data');
@@ -48,10 +59,11 @@ const AgentDashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, [statusFilter, priorityFilter, sortBy]);
+  }, [statusFilter, priorityFilter, sortBy, page]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setPage(1);
     fetchData();
   };
 
@@ -288,6 +300,34 @@ const AgentDashboard = () => {
               ))}
             </tbody>
           </table>
+          {pagination.totalPages > 1 && (
+            <div className="pagination-bar">
+              <div className="pagination-info">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} tickets
+              </div>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  disabled={pagination.page <= 1}
+                >
+                  <ChevronLeft size={16} />
+                  <span>Previous</span>
+                </button>
+                <span className="pagination-pages">
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((prev) => Math.min(pagination.totalPages, prev + 1))}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  <span>Next</span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

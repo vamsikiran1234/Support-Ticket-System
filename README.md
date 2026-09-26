@@ -3,7 +3,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-v20%2B-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-v18-blue.svg)](https://react.dev/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
-[![Tests](https://img.shields.io/badge/Tests-Jest%20%26%20Supertest%20(22%20passing)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-Jest%20%26%20Supertest%20(23%20passing)-brightgreen.svg)]()
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blueviolet.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)]()
 
 A full-stack, enterprise-grade **Support Ticket Management System** built with **React.js**, **Node.js (Express)**, and **MySQL**. Provides role-based portals for **Customers** (to raise, track, and converse on support requests) and **Support Agents** (to monitor KPIs, triage queues, update statuses, assign tickets, and resolve issues).
@@ -12,8 +13,9 @@ A full-stack, enterprise-grade **Support Ticket Management System** built with *
 
 ## 🚀 Live Demo & Deployment URLs
 
-- **Public Frontend Portal:** `https://support-ticket-system-demo.vercel.app` *(or your deployed Vercel/Netlify URL)*
-- **Public Backend API:** `https://support-ticket-api.onrender.com` *(or your deployed Render/Railway URL)*
+- **Public Backend API:** [https://support-ticket-api-0te6.onrender.com](https://support-ticket-api-0te6.onrender.com)
+- **Backend Health Check:** [https://support-ticket-api-0te6.onrender.com/api/health](https://support-ticket-api-0te6.onrender.com/api/health)
+- **Public Frontend Portal:** `https://support-ticket-frontend-two-plum.vercel.app` *(or custom Vercel domain)*
 - **GitHub Repository:** [https://github.com/vamsikiran1234/Support-Ticket-System.git](https://github.com/vamsikiran1234/Support-Ticket-System.git)
 
 ---
@@ -328,6 +330,38 @@ For immediate testing, the database seed contains the following pre-configured a
 3. Output directory: `build`
 4. Set the Environment Variable:
    - `REACT_APP_API_URL`: `https://your-backend-api.onrender.com/api`
+
+---
+
+## 🌟 Implemented Optional Enhancements
+
+As outlined in Section 15 of the assessment guidelines, the following advanced architectural and enterprise features have been implemented:
+
+### 1. 🔄 Automated CI/CD Pipeline (GitHub Actions)
+- Located at `.github/workflows/ci.yml`.
+- Automatically triggers on every push and pull request to the `main` branch.
+- Sets up Node.js v20, installs dependencies with caching, executes the complete 23-test Jest & Supertest suite, and builds the production frontend.
+- Provides immediate regression protection across all commits.
+
+### 2. 📄 Server-Side Pagination
+- Implemented in backend endpoint `GET /api/tickets?page=1&limit=10&paginated=true`.
+- Supports configurable limits and dynamic offset computation with total records and total page metadata calculations.
+- Backward-compatible: standard queries without pagination parameters continue to return the raw array.
+- Frontend includes responsive pagination controls with "Previous", page status, and "Next" buttons on both Customer and Agent dashboards.
+
+### 3. ⚡ Advanced Database Indexing & Query Optimization
+- Located at `database/query_optimization.sql`.
+- **Composite Indexes:**
+  - `idx_user_status_created` on `(user_id, status, created_at DESC)` eliminating filesorts on customer filtering.
+  - `idx_status_priority_created` on `(status, priority, created_at DESC)` optimizing multi-criteria agent queue lookups.
+  - `idx_assigned_status` on `(assigned_to, status)` for fast workload distribution queries.
+  - `idx_ticket_comments_order` on `(ticket_id, created_at ASC)` for chronological comment thread streaming.
+- **Full-Text Search:** Full-text indexing (`ft_subject_description`) on `tickets(subject, description)` for fast search without costly `LIKE '%...%'` table scans.
+- **EXPLAIN Analysis:** Benchmark queries included to demonstrate the transition from full table scan (`ALL`) to index lookup (`ref`/`range`).
+
+### 4. 🐳 Docker & Docker Compose Containerization
+- Production Dockerfiles provided for both `backend/` (Node.js Alpine) and `frontend/` (multi-stage build with optimized Nginx reverse proxy).
+- Orchestrated with `docker-compose.yml` for unified single-command deployment (`docker compose up --build`).
 
 ---
 

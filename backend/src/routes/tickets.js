@@ -60,11 +60,37 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/tickets - Retrieve tickets (role-filtered, searchable, and filterable)
+// GET /api/tickets - Retrieve tickets (role-filtered, searchable, filterable, and paginated)
 router.get('/', async (req, res) => {
   try {
     const isAgent = req.user.role === 'agent';
-    const { status, priority, search, sort } = req.query;
+    const { status, priority, search, sort, page, limit, paginated } = req.query;
+
+    let baseFilterSql = ' WHERE 1=1';
+    const filterParams = [];
+
+    // Customers only see their own tickets
+    if (!isAgent) {
+      baseFilterSql += ' AND tickets.user_id = ?';
+      filterParams.push(req.user.id);
+    }
+
+    if (status) {
+      baseFilterSql += ' AND tickets.status = ?';
+      filterParams.push(status);
+    }
+
+    if (priority) {
+      baseFilterSql += ' AND tickets.priority = ?';
+      filterParams.push(priority);
+    }
+
+    if (search) {
+      baseFilterSql += ' AND (tickets.subject LIKE ? OR tickets.description LIKE ?)';
+      filterParams.push(`%${search}%`, `%${search}%`);
+    }
+
+    const isPaginationRequested = paginated === 'true' || (page !== undefined && limit !== undefined);
 
     let sql = `
       SELECT 
@@ -83,30 +109,9 @@ router.get('/', async (req, res) => {
       FROM tickets
       JOIN users ON tickets.user_id = users.id
       LEFT JOIN users AS agents ON tickets.assigned_to = agents.id
-      WHERE 1=1
+      ${baseFilterSql}
     `;
-    const params = [];
-
-    // Customers only see their own tickets
-    if (!isAgent) {
-      sql += ' AND tickets.user_id = ?';
-      params.push(req.user.id);
-    }
-
-    if (status) {
-      sql += ' AND tickets.status = ?';
-      params.push(status);
-    }
-
-    if (priority) {
-      sql += ' AND tickets.priority = ?';
-      params.push(priority);
-    }
-
-    if (search) {
-      sql += ' AND (tickets.subject LIKE ? OR tickets.description LIKE ?)';
-      params.push(`%${search}%`, `%${search}%`);
-    }
+    const params = [...filterParams];
 
     // Sorting
     if (sort === 'oldest') {
@@ -115,6 +120,30 @@ router.get('/', async (req, res) => {
       sql += " ORDER BY FIELD(tickets.priority, 'high', 'medium', 'low'), tickets.created_at DESC";
     } else {
       sql += ' ORDER BY tickets.created_at DESC';
+    }
+
+    // Pagination calculations
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 10));
+    const offsetNum = (pageNum - 1) * limitNum;
+
+    if (isPaginationRequested) {
+      const countSql = `SELECT COUNT(*) AS total FROM tickets ${baseFilterSql}`;
+      const [countRows] = await pool.execute(countSql, filterParams);
+      const totalCount = Number(countRows[0]?.total || 0);
+
+      sql += ` LIMIT ${limitNum} OFFSET ${offsetNum}`;
+      const [rows] = await pool.execute(sql, params);
+
+      return res.json({
+        tickets: rows,
+        pagination: {
+          total: totalCount,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(totalCount / limitNum) || 1
+        }
+      });
     }
 
     const [rows] = await pool.execute(sql, params);

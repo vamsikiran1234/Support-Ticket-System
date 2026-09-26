@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { StatusBadge, PriorityBadge } from '../components/StatusBadge';
-import { PlusCircle, Search, Filter, MessageSquare, AlertCircle, RefreshCw, Calendar, ArrowRight } from 'lucide-react';
+import { PlusCircle, Search, Filter, MessageSquare, AlertCircle, RefreshCw, Calendar, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const CustomerDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -11,18 +11,29 @@ const CustomerDashboard = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 10, totalPages: 1 });
 
   const fetchTickets = async () => {
     try {
       setLoading(true);
       setError('');
-      const params = {};
+      const params = {
+        page,
+        limit: 10,
+        paginated: 'true'
+      };
       if (statusFilter) params.status = statusFilter;
       if (priorityFilter) params.priority = priorityFilter;
       if (search.trim()) params.search = search.trim();
 
       const res = await api.get('/tickets', { params });
-      setTickets(res.data);
+      if (res.data.tickets) {
+        setTickets(res.data.tickets);
+        setPagination(res.data.pagination);
+      } else {
+        setTickets(res.data);
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch your tickets');
     } finally {
@@ -32,10 +43,11 @@ const CustomerDashboard = () => {
 
   useEffect(() => {
     fetchTickets();
-  }, [statusFilter, priorityFilter]);
+  }, [statusFilter, priorityFilter, page]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setPage(1);
     fetchTickets();
   };
 
@@ -204,6 +216,34 @@ const CustomerDashboard = () => {
               ))}
             </tbody>
           </table>
+          {pagination.totalPages > 1 && (
+            <div className="pagination-bar">
+              <div className="pagination-info">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} tickets
+              </div>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  disabled={pagination.page <= 1}
+                >
+                  <ChevronLeft size={16} />
+                  <span>Previous</span>
+                </button>
+                <span className="pagination-pages">
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((prev) => Math.min(pagination.totalPages, prev + 1))}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  <span>Next</span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

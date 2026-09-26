@@ -96,6 +96,26 @@ describe('Ticket, Comments & Role-Based Access APIs', () => {
       expect(res.body).toHaveLength(1);
       expect(res.body[0].subject).toBe('Issue 1');
     });
+
+    it('supports server-side pagination with page, limit and total metadata', async () => {
+      const mockTickets = [
+        { id: 1, subject: 'Issue 1', status: 'open', priority: 'medium', customer_name: 'Alice' }
+      ];
+      pool.execute
+        .mockResolvedValueOnce([[{ total: 25 }]])
+        .mockResolvedValueOnce([mockTickets]);
+
+      const res = await request(app)
+        .get('/api/tickets?page=2&limit=10&paginated=true')
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('tickets');
+      expect(res.body).toHaveProperty('pagination');
+      expect(res.body.pagination.page).toBe(2);
+      expect(res.body.pagination.total).toBe(25);
+      expect(res.body.pagination.totalPages).toBe(3);
+    });
   });
 
   describe('GET /api/tickets/:id - Ownership & Role Authorization', () => {
