@@ -87,9 +87,14 @@ const Login = () => {
           </div>
 
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-            {loading ? 'Authenticating...' : 'Sign In'}
+            {loading ? 'Connecting to Cloud API...' : 'Sign In'}
             {!loading && <ArrowRight size={18} />}
           </button>
+          {loading && (
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.6rem' }}>
+              ⚡ Free-tier cloud API may take ~30s on cold start. Please hold on!
+            </p>
+          )}
         </form>
 
         <div className="demo-credentials">

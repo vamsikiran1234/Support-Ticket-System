@@ -1,0 +1,23 @@
+name: Keep Render Backend Active
+
+on:
+  schedule:
+    # Runs every 14 minutes (Render free tier spins down after 15 minutes of inactivity)
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    name: Ping Cloud API Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend Health Endpoint
+        run: |
+          echo "Pinging Render health check..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://support-ticket-api-0te6.onrender.com/api/health)
+          echo "Response HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Render backend is warm and healthy (200 OK)."
+          else
+            echo "Cold start ping dispatched or status $HTTP_STATUS received."
+          fi

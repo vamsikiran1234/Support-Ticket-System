@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -9,6 +9,7 @@ import CustomerDashboard from './pages/CustomerDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import CreateTicket from './pages/CreateTicket';
 import TicketDetail from './pages/TicketDetail';
+import api from './api/client';
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -33,6 +34,11 @@ const RootRedirect = () => {
 };
 
 function AppRoutes() {
+  // Proactive background ping to wake up Render free tier upon initial page visit
+  useEffect(() => {
+    api.get('/health').catch(() => {});
+  }, []);
+
   return (
     <div className="app-layout">
       <Navbar />

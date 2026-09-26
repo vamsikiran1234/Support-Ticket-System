@@ -1,8 +1,6 @@
 <div align="center">
 
-  <a href="https://support-ticket-system-q9sc4zngc-vamsikiran1234s-projects.vercel.app">
-    <img src="assets/ticketflow-workflow.svg" width="100%" alt="TicketFlow Real-Time Application Workflow Process" />
-  </a>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1,12,24&height=230&section=header&text=TicketFlow%20Enterprise&fontSize=44&fontAlignY=36&desc=Full-Stack%20Support%20Ticket%20Management%20System&descAlignY=58&descAlign=50" width="100%" alt="TicketFlow Banner" />
 
   <p align="center">
     <strong>A production-ready, enterprise-grade ticketing and customer support platform built for high reliability, strict role-based data isolation, and low-latency response times.</strong>
@@ -38,11 +36,17 @@ The application is deployed across multi-cloud infrastructure and is accessible 
 
 | Service Component | Cloud Provider | Status | URL / Endpoint |
 | :--- | :--- | :---: | :--- |
-| **Public Frontend Portal** | **Vercel** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [https://support-ticket-system-q9sc4zngc-vamsikiran1234s-projects.vercel.app](https://support-ticket-system-q9sc4zngc-vamsikiran1234s-projects.vercel.app) |
+| **Public Frontend Portal** | **Vercel** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [Live Application Link](https://support-ticket-system-q9sc4zngc-vamsikiran1234s-projects.vercel.app) |
 | **Backend REST API** | **Render** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [`https://support-ticket-api-0te6.onrender.com`](https://support-ticket-api-0te6.onrender.com) |
 | **API Health Check** | **Render** | ![200 OK](https://img.shields.io/badge/HTTP-200%20OK-blue?style=flat-square) | [`https://support-ticket-api-0te6.onrender.com/api/health`](https://support-ticket-api-0te6.onrender.com/api/health) |
 | **Managed Relational DB** | **Aiven Cloud** | ![SSL Encrypted](https://img.shields.io/badge/MySQL%208.0-SSL%20Encrypted-orange?style=flat-square) | Remote Host: `mysql-3ec7aeda-vamsikiran198-d920.h.aivencloud.com:27489` |
 | **Source Code Repository** | **GitHub** | ![Public](https://img.shields.io/badge/Git-Public%20Repo-lightgrey?style=flat-square) | [vamsikiran1234/Support-Ticket-System](https://github.com/vamsikiran1234/Support-Ticket-System.git) |
+
+> 💡 **Evaluator Note on Free-Tier Cloud Instances:**
+> Render spins down inactive free-tier instances after 15 minutes. To ensure optimal evaluation:
+> - **Automated Keep-Alive:** A GitHub Actions cron workflow (`.github/workflows/keep_alive.yml`) automatically pings the `/api/health` endpoint periodically.
+> - **Client-Side Pre-Warming:** Opening the frontend web app immediately dispatches a background wake-up ping to the API.
+> - If an instance was cold, the initial API call takes ~25–35 seconds to warm up; all subsequent operations respond instantly in milliseconds.
 
 ---
 
