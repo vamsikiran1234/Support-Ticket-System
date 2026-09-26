@@ -36,7 +36,7 @@ The application is deployed across multi-cloud infrastructure and is accessible 
 
 | Service Component | Cloud Provider | Status | URL / Endpoint |
 | :--- | :--- | :---: | :--- |
-| **Public Frontend Portal** | **Vercel** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [Live Customer & Agent Portal](https://support-ticket-frontend-two-plum.vercel.app) *(or your deployed Vercel URL)* |
+| **Public Frontend Portal** | **Vercel** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [Live Application Link](https://support-ticket-system-q9sc4zngc-vamsikiran1234s-projects.vercel.app) |
 | **Backend REST API** | **Render** | ![Active](https://img.shields.io/badge/Live-Online-success?style=flat-square) | [`https://support-ticket-api-0te6.onrender.com`](https://support-ticket-api-0te6.onrender.com) |
 | **API Health Check** | **Render** | ![200 OK](https://img.shields.io/badge/HTTP-200%20OK-blue?style=flat-square) | [`https://support-ticket-api-0te6.onrender.com/api/health`](https://support-ticket-api-0te6.onrender.com/api/health) |
 | **Managed Relational DB** | **Aiven Cloud** | ![SSL Encrypted](https://img.shields.io/badge/MySQL%208.0-SSL%20Encrypted-orange?style=flat-square) | Remote Host: `mysql-3ec7aeda-vamsikiran198-d920.h.aivencloud.com:27489` |
